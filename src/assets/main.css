@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bs-primary: #24a1de;
+  --bs-primary-rgb: 36, 161, 222;
+  --bs-link-color: #24a1de;
+  --bs-link-hover-color: #1a8cc4;
+  --telegram-blue: #24a1de;
+  --telegram-blue-hover: #1a8cc4;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: #f7f9fc;
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Bootstrap Button Primary Customization for Telegram Blue */
+.btn-primary {
+  --bs-btn-bg: #24a1de;
+  --bs-btn-border-color: #24a1de;
+  --bs-btn-hover-bg: #1a8cc4;
+  --bs-btn-hover-border-color: #1a8cc4;
+  --bs-btn-active-bg: #157aa8;
+  --bs-btn-active-border-color: #157aa8;
+  --bs-btn-focus-shadow-rgb: 36, 161, 222;
+}
+
+/* Bootstrap Checkbox Active Color */
+.form-check-input:checked {
+  background-color: #24a1de;
+  border-color: #24a1de;
+}
+
+.form-check-input:focus {
+  border-color: #24a1de;
+  box-shadow: 0 0 0 0.2rem rgba(36, 161, 222, 0.2);
+}
