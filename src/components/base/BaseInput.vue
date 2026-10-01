@@ -1,9 +1,7 @@
 <template>
   <div class="mb-3 base-input-group" :class="{ 'is-focused': isFocused, 'has-error': isInvalid }">
     <!-- Form Label -->
-    <label v-if="label" :for="id" class="form-label base-input-label text-uppercase fw-bold mb-2">
-      {{ label }}
-    </label>
+ 
 
     <!-- Bootstrap Input Group -->
     <div

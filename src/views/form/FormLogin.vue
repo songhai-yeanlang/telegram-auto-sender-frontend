@@ -109,7 +109,7 @@
           <!-- Footer Link -->
           <div class="text-center mt-4 small">
             <span class="text-secondary">Contact Me by </span>
-            <a href="#" class="signup-link text-decoration-none fw-semibold" @click.prevent="handleSignUp">
+            <a href="https://t.me/songhai_yeanlang" class="signup-link text-decoration-none fw-semibold" >
               Telegram
             </a>
             <span class="text-secondary ms-1">if you have problems</span>
@@ -192,11 +192,7 @@ function handleForgotPassword() {
   });
 }
 
-function handleSignUp() {
-  router.push('/register').catch(() => {
-    console.log('Navigate to register');
-  });
-}
+
 </script>
 
 <style scoped>
