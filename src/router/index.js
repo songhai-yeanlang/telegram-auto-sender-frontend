@@ -4,6 +4,8 @@ import VerifyEmail from '@/views/form/VerifyEmail.vue';
 import VerifyOpt from '@/views/form/VerifyOpt.vue';
 import ResetPassword from '@/views/form/ResetPassword.vue';
 import ContactPage from '@/views/contacts/ContactPage.vue';
+import Broadcast from '@/views/broadcast/Broadcast.vue';
+import UserProfile from '@/views/userProfile/UserProfile.vue';
 import Page404 from '@/views/Page404.vue';
 
 const routes = [
@@ -44,6 +46,22 @@ const routes = [
     name: 'Contacts',
     component: ContactPage,
     meta: { requiresAuth: true },
+  },
+  {
+    path: '/broadcast',
+    name: 'Broadcast',
+    component: Broadcast,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/settings',
+    name: 'Settings',
+    component: UserProfile,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/profile',
+    redirect: '/settings',
   },
   {
     path: '/:pathMatch(.*)*',

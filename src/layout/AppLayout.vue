@@ -109,13 +109,17 @@
 
         <!-- Right: Admin Profile & Logout -->
         <div class="d-flex align-items-center">
-          <!-- User Avatar & Username -->
-          <div class="user-pill d-flex align-items-center me-3">
+          <!-- User Avatar & Username (Navigates to Settings) -->
+          <router-link
+            to="/settings"
+            class="user-pill d-flex align-items-center me-3 text-decoration-none"
+            title="User Profile & Settings"
+          >
             <div class="avatar-badge d-flex align-items-center justify-content-center me-2">
               {{ userInitial }}
             </div>
             <span class="user-name text-dark fw-semibold small">{{ userName }}</span>
-          </div>
+          </router-link>
 
           <!-- Divider -->
           <div class="header-divider me-3"></div>
@@ -264,6 +268,16 @@ function handleLogout() {
   user-select: none;
 }
 
+.user-pill {
+  padding: 4px 8px;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+}
+
+.user-pill:hover {
+  background-color: #f1f5f9;
+}
+
 .avatar-badge {
   width: 32px;
   height: 32px;
@@ -272,6 +286,7 @@ function handleLogout() {
   color: #ffffff;
   font-size: 13px;
   font-weight: 700;
+  box-shadow: 0 2px 6px rgba(36, 161, 222, 0.3);
 }
 
 .header-divider {

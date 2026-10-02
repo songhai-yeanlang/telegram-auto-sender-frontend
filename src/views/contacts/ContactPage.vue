@@ -54,11 +54,11 @@
           <thead>
             <tr>
               <th scope="col" class="th-id ps-4">ID</th>
-              <th scope="col" class="th-chatid">CHAT ID</th>
-              <th scope="col" class="th-name">NAME</th>
-              <th scope="col" class="th-status text-center">STATUS</th>
-              <th scope="col" class="th-error">ERROR MESSAGE</th>
-              <th scope="col" class="th-actions text-end pe-4">ACTIONS</th>
+              <th scope="col" class="th-chatid">Phone Number</th>
+              <th scope="col" class="th-name">Name</th>
+              <th scope="col" class="th-status text-center">Status</th>
+              <th scope="col" class="th-error">Error Message</th>
+              <th scope="col" class="th-actions text-end pe-4">Action</th>
             </tr>
           </thead>
           <tbody>
