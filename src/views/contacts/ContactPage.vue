@@ -62,13 +62,38 @@
             </tr>
           </thead>
           <tbody>
-            <!-- Loading skeleton / spinner -->
-            <tr v-if="isLoading">
-              <td colspan="6" class="text-center py-5">
-                <div class="spinner-border text-primary spinner-border-sm me-2" role="status"></div>
-                <span class="text-secondary small">Loading contacts...</span>
-              </td>
-            </tr>
+            <!-- Loading Shimmer Skeleton Rows -->
+            <template v-if="isLoading">
+              <tr v-for="n in 6" :key="`shimmer-${n}`" class="align-middle">
+                <!-- ID -->
+                <td class="ps-4 py-3">
+                  <BaseShimmer width="22px" height="14px" border-radius="4px" />
+                </td>
+                <!-- Phone Number / Chat ID -->
+                <td class="py-3">
+                  <BaseShimmer width="130px" height="15px" border-radius="6px" />
+                </td>
+                <!-- Name -->
+                <td class="py-3">
+                  <BaseShimmer width="160px" height="15px" border-radius="6px" />
+                </td>
+                <!-- Status Badge -->
+                <td class="text-center py-3">
+                  <BaseShimmer width="70px" height="22px" border-radius="20px" class="mx-auto" />
+                </td>
+                <!-- Error Message -->
+                <td class="py-3">
+                  <BaseShimmer width="130px" height="14px" border-radius="6px" />
+                </td>
+                <!-- Actions -->
+                <td class="text-end pe-4 py-3">
+                  <div class="d-inline-flex align-items-center gap-2">
+                    <BaseShimmer width="28px" height="28px" border-radius="6px" />
+                    <BaseShimmer width="28px" height="28px" border-radius="6px" />
+                  </div>
+                </td>
+              </tr>
+            </template>
 
             <!-- Empty State -->
             <tr v-else-if="paginatedContacts.length === 0">
@@ -337,6 +362,7 @@ import { ref, reactive, computed, onMounted } from 'vue';
 import api from '@/api/api';
 import AppLayout from '@/layout/AppLayout.vue';
 import BaseToast from '@/components/base/BaseToast.vue';
+import BaseShimmer from '@/components/base/BaseShimmer.vue';
 
 // Contacts Data & State
 const contacts = ref([]);
@@ -555,6 +581,16 @@ async function submitUploadFile() {
 }
 
 onMounted(() => {
+  const pendingToast = sessionStorage.getItem('pending_toast');
+  if (pendingToast) {
+    try {
+      const parsed = JSON.parse(pendingToast);
+      showToast(parsed.message || 'Password reset successfully!', parsed.type || 'success');
+    } catch {
+      showToast(pendingToast, 'success');
+    }
+    sessionStorage.removeItem('pending_toast');
+  }
   fetchContacts();
 });
 </script>

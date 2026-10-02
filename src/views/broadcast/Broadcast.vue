@@ -473,6 +473,16 @@ async function executeBroadcast() {
 }
 
 onMounted(() => {
+  const pendingToast = sessionStorage.getItem('pending_toast');
+  if (pendingToast) {
+    try {
+      const parsed = JSON.parse(pendingToast);
+      showToast(parsed.message || 'Success!', parsed.type || 'success');
+    } catch {
+      showToast(pendingToast, 'success');
+    }
+    sessionStorage.removeItem('pending_toast');
+  }
   fetchContacts();
 });
 </script>

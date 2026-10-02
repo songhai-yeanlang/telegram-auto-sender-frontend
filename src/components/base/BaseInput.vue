@@ -143,7 +143,7 @@ const props = defineProps({
   }
 });
 
-defineEmits(['update:modelValue', 'focus', 'blur']);
+const emit = defineEmits(['update:modelValue', 'focus', 'blur']);
 
 const isFocused = ref(false);
 const showPassword = ref(false);
@@ -165,10 +165,12 @@ function togglePasswordVisibility() {
 
 function handleFocus(event) {
   isFocused.value = true;
+  emit('focus', event);
 }
 
 function handleBlur(event) {
   isFocused.value = false;
+  emit('blur', event);
 }
 </script>
 

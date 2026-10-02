@@ -98,7 +98,7 @@
 
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0 align-items-center small">
-              <li class="breadcrumb-item text-secondary">SaaS Console</li>
+              <li class="breadcrumb-item text-secondary">TG Sender</li>
               <li class="breadcrumb-separator mx-2 text-muted">/</li>
               <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">
                 {{ breadcrumbTitle }}
@@ -115,8 +115,9 @@
             class="user-pill d-flex align-items-center me-3 text-decoration-none"
             title="User Profile & Settings"
           >
-            <div class="avatar-badge d-flex align-items-center justify-content-center me-2">
-              {{ userInitial }}
+            <div class="avatar-badge d-flex align-items-center justify-content-center me-2 overflow-hidden">
+              <img v-if="userAvatarUrl" :src="userAvatarUrl" class="avatar-badge-img" alt="Avatar" />
+              <span v-else>{{ userInitial }}</span>
             </div>
             <span class="user-name text-dark fw-semibold small">{{ userName }}</span>
           </router-link>
@@ -237,6 +238,14 @@ const userEmail = computed(() => {
 
 const userInitial = computed(() => {
   return userName.value.charAt(0).toUpperCase();
+});
+
+const userAvatarUrl = computed(() => {
+  const avatar = authStore.user?.avatar;
+  if (!avatar) return '';
+  if (avatar.startsWith('http://') || avatar.startsWith('https://')) return avatar;
+  const baseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api').replace(/\/api\/?$/, '');
+  return `${baseUrl}${avatar}`;
 });
 
 function toggleMobileSidebar() {
@@ -378,6 +387,12 @@ function confirmLogout() {
   font-size: 13px;
   font-weight: 700;
   box-shadow: 0 2px 6px rgba(36, 161, 222, 0.3);
+}
+
+.avatar-badge-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .header-divider {

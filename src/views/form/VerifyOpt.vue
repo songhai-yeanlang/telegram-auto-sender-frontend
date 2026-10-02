@@ -94,7 +94,7 @@
 
           <!-- Footer Link -->
           <div class="text-center mt-4 small">
-            <span class="text-secondary">Contact Me by </span>
+            <span class="text-secondary">Need help? Contact Me by </span>
             <a
               href="https://t.me/songhai_yeanlang"
               target="_blank"
@@ -103,7 +103,7 @@
             >
               Telegram
             </a>
-            <span class="text-secondary ms-1">if you have problems</span>
+            
           </div>
         </form>
 

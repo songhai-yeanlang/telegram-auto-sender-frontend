@@ -187,6 +187,15 @@ async function handleLogin() {
         localStorage.removeItem('login_saved_password');
       }
 
+      // Store toast notification for dashboard
+      sessionStorage.setItem(
+        'pending_toast',
+        JSON.stringify({
+          message: 'Login successful! Welcome back.',
+          type: 'success'
+        })
+      );
+
       router.push('/dashboard');
     }
   } catch (err) {
