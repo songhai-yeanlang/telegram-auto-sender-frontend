@@ -44,3 +44,83 @@ body {
   border-color: #24a1de;
   box-shadow: 0 0 0 0.2rem rgba(36, 161, 222, 0.2);
 }
+
+/* ─────────────────────────────────────────────────── */
+/* Custom Scrollbar — Telegram Blue Theme              */
+/* ─────────────────────────────────────────────────── */
+
+/* Global scrollbar (Webkit: Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(36, 161, 222, 0.35);
+  border-radius: 100px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(36, 161, 222, 0.7);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Main content area scrollbar (light bg context) */
+.main-wrapper::-webkit-scrollbar {
+  width: 5px;
+}
+
+.main-wrapper::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.main-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(36, 161, 222, 0.4);
+  border-radius: 100px;
+}
+
+.main-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #24a1de;
+}
+
+/* Sidebar scrollbar (dark bg context) */
+.sidebar::-webkit-scrollbar {
+  width: 3px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 100px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(36, 161, 222, 0.5);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(36, 161, 222, 0.4) transparent;
+}
+
+.main-wrapper {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(36, 161, 222, 0.5) #f1f5f9;
+}
+
+.sidebar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.2) transparent;
+}

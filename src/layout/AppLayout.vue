@@ -15,7 +15,7 @@
       <!-- Sidebar Navigation Menu -->
       <nav class="sidebar-nav flex-grow-1 px-3 py-2">
         <ul class="nav flex-column gap-1">
-          <!-- Contacts (Active) -->
+          <!-- Contacts -->
           <li class="nav-item">
             <router-link
               to="/contacts"
@@ -128,7 +128,7 @@
           <button
             type="button"
             class="logout-btn btn btn-link p-0 text-decoration-none d-flex align-items-center small text-secondary"
-            @click="handleLogout"
+            @click="openLogoutModal"
           >
             <svg class="logout-icon me-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -145,6 +145,64 @@
         <slot />
       </main>
     </div>
+
+    <!-- ─── Logout Confirmation Modal ─── -->
+    <Teleport to="body">
+      <Transition name="modal-fade">
+        <div
+          v-if="showLogoutModal"
+          class="logout-modal-overlay"
+          @click.self="closeLogoutModal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="logout-modal-title"
+        >
+          <Transition name="modal-slide">
+            <div v-if="showLogoutModal" class="logout-modal-box">
+              <!-- Modal Icon -->
+              <div class="modal-icon-ring mx-auto mb-4">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+              </div>
+
+              <!-- Modal Text -->
+              <h2 class="modal-title" id="logout-modal-title">Sign out of account?</h2>
+              <p class="modal-subtitle">
+                You will be redirected to the login page. Any unsaved changes will be lost.
+              </p>
+
+           
+
+              <!-- Action Buttons -->
+              <div class="modal-actions d-flex gap-3">
+                <button
+                  type="button"
+                  class="modal-btn-cancel flex-grow-1"
+                  @click="closeLogoutModal"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  class="modal-btn-confirm flex-grow-1"
+                  @click="confirmLogout"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                  </svg>
+                  Yes, Sign Out
+                </button>
+              </div>
+            </div>
+          </Transition>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -167,9 +225,14 @@ const props = defineProps({
 const router = useRouter();
 const authStore = useAuthStore();
 const isMobileSidebarOpen = ref(false);
+const showLogoutModal = ref(false);
 
 const userName = computed(() => {
   return authStore.user?.username || 'Admin';
+});
+
+const userEmail = computed(() => {
+  return authStore.user?.email || '';
 });
 
 const userInitial = computed(() => {
@@ -184,7 +247,16 @@ function closeMobileSidebar() {
   isMobileSidebarOpen.value = false;
 }
 
-function handleLogout() {
+function openLogoutModal() {
+  showLogoutModal.value = true;
+}
+
+function closeLogoutModal() {
+  showLogoutModal.value = false;
+}
+
+function confirmLogout() {
+  showLogoutModal.value = false;
   authStore.logout();
   router.push('/login');
 }
@@ -193,7 +265,14 @@ function handleLogout() {
 <style scoped>
 .app-container {
   background-color: #f8fafc;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;  /* Prevent outer scroll */
+}
+
+/* Main wrapper scrolls, sidebar stays fixed */
+.main-wrapper {
+  overflow-y: auto;
+  height: 100vh;
 }
 
 /* Sidebar Styles */
@@ -201,6 +280,11 @@ function handleLogout() {
   width: 250px;
   background-color: #0b1329;
   z-index: 1040;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  flex-shrink: 0;
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -261,7 +345,14 @@ function handleLogout() {
 /* Top Header Navbar */
 .top-header {
   height: 64px;
+  min-height: 64px;
+  max-height: 64px;
+  flex-shrink: 0;
   border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: #ffffff !important;
 }
 
 .breadcrumb-separator {
@@ -306,11 +397,22 @@ function handleLogout() {
 
 /* Mobile responsive handling */
 @media (max-width: 991.98px) {
+  .app-container {
+    height: auto;
+    overflow: visible;
+  }
+
+  .main-wrapper {
+    height: auto;
+    overflow-y: visible;
+  }
+
   .sidebar {
     position: fixed;
     top: 0;
     bottom: 0;
     left: 0;
+    height: 100vh;
     transform: translateX(-100%);
   }
 
@@ -328,5 +430,167 @@ function handleLogout() {
     z-index: 1030;
     backdrop-filter: blur(2px);
   }
+}
+
+/* ─── Logout Confirmation Modal ─── */
+.logout-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 19, 41, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 16px;
+}
+
+.logout-modal-box {
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 36px 32px 28px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.18),
+    0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.modal-icon-ring {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ef4444;
+  box-shadow: 0 0 0 8px rgba(239, 68, 68, 0.08);
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.3px;
+  margin-bottom: 8px;
+}
+
+.modal-subtitle {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+/* User session info row */
+.modal-session-info {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 12px 16px;
+  margin-bottom: 24px;
+}
+
+.modal-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #24a1de, #0284c7);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(36, 161, 222, 0.3);
+}
+
+.modal-user-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.3;
+}
+
+.modal-user-email {
+  font-size: 12px;
+  color: #64748b;
+  word-break: break-all;
+}
+
+/* Action Buttons */
+.modal-actions {
+  margin-top: 4px;
+}
+
+.modal-btn-cancel {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 11px 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-btn-cancel:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.modal-btn-confirm {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  border: none;
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 11px 20px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-btn-confirm:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+  transform: translateY(-1px);
+}
+
+/* ─── Modal Transitions ─── */
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.25s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-slide-enter-active {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal-slide-leave-active {
+  transition: all 0.2s cubic-bezier(0.4, 0, 1, 1);
+}
+
+.modal-slide-enter-from {
+  opacity: 0;
+  transform: scale(0.88) translateY(20px);
+}
+
+.modal-slide-leave-to {
+  opacity: 0;
+  transform: scale(0.95) translateY(8px);
 }
 </style>

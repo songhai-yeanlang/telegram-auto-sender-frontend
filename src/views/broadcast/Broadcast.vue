@@ -51,21 +51,8 @@
 
             <!-- Quick Template Insert Tags -->
             <div class="d-flex align-items-center flex-wrap gap-2 mb-4">
-              <span class="text-muted small me-1">Quick variables:</span>
-              <button
-                type="button"
-                class="btn btn-sm btn-tag rounded-pill px-2 py-1"
-                @click="insertTag('{name}')"
-              >
-                + {name}
-              </button>
-              <button
-                type="button"
-                class="btn btn-sm btn-tag rounded-pill px-2 py-1"
-                @click="insertTag('{chat_id}')"
-              >
-                + {chat_id}
-              </button>
+             
+         
               <button
                 type="button"
                 class="btn btn-sm btn-link text-decoration-none small text-danger ms-auto p-0"
@@ -76,20 +63,7 @@
               </button>
             </div>
 
-            <!-- Safety Reminder Box -->
-            <div class="safety-box d-flex align-items-start gap-3 p-3 rounded-3 mb-4">
-              <div class="safety-icon-wrapper text-primary mt-1">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                </svg>
-              </div>
-              <div class="small">
-                <div class="fw-bold text-dark">Personal Account Anti-Ban Protection</div>
-                <div class="text-secondary mt-1">
-                  Each message is automatically dispatched with randomized pauses (10 to 25 seconds). If a phone number contact is not yet registered in your Telegram address book, the system imports it first safely.
-                </div>
-              </div>
-            </div>
+           
 
             <!-- Start Broadcast Action Button -->
             <button

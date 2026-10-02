@@ -83,7 +83,7 @@
                 class="form-check-input mt-0 me-2"
               />
               <label for="remember-device" class="form-check-label user-select-none text-secondary small">
-                Remember
+                Remember Me
               </label>
             </div>
             <a href="#" class="forgot-password-link text-decoration-none small" @click.prevent="handleForgotPassword">
@@ -108,11 +108,11 @@
 
           <!-- Footer Link -->
           <div class="text-center mt-4 small">
-            <span class="text-secondary">Contact Me by </span>
+            <span class="text-secondary">Need help? Contact Me by </span>
             <a href="https://t.me/songhai_yeanlang" class="signup-link text-decoration-none fw-semibold" >
               Telegram
             </a>
-            <span class="text-secondary ms-1">if you have problems</span>
+           
           </div>
         </form>
       </div>
@@ -121,7 +121,7 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue';
+import { reactive, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
 import api from '@/api/api';
@@ -136,12 +136,22 @@ const authStore = useAuthStore();
 const form = reactive({
   identifier: '',
   password: '',
-  rememberMe: true
+  rememberMe: false
 });
 
 const isLoading = ref(false);
 const hasLoginError = ref(false);
 const errorMessage = ref('');
+
+// ─── Load saved credentials on mount ───────────────────────────
+onMounted(() => {
+  const savedRemember = localStorage.getItem('login_remember_me');
+  if (savedRemember === 'true') {
+    form.rememberMe = true;
+    form.identifier = localStorage.getItem('login_saved_identifier') || '';
+    form.password   = localStorage.getItem('login_saved_password')   || '';
+  }
+});
 
 function onInputChange() {
   if (hasLoginError.value) {
@@ -166,10 +176,15 @@ async function handleLogin() {
       authStore.setToken(token);
       authStore.setUser(admin);
 
+      // ─── Save or clear remembered credentials ──────────────
       if (form.rememberMe) {
-        localStorage.setItem('remembered_identifier', form.identifier.trim());
+        localStorage.setItem('login_remember_me',       'true');
+        localStorage.setItem('login_saved_identifier',  form.identifier.trim());
+        localStorage.setItem('login_saved_password',    form.password);
       } else {
-        localStorage.removeItem('remembered_identifier');
+        localStorage.removeItem('login_remember_me');
+        localStorage.removeItem('login_saved_identifier');
+        localStorage.removeItem('login_saved_password');
       }
 
       router.push('/dashboard');
@@ -191,8 +206,6 @@ function handleForgotPassword() {
     console.log('Navigate to verify email');
   });
 }
-
-
 </script>
 
 <style scoped>
