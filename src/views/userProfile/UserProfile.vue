@@ -432,7 +432,8 @@ async function handleUpdateUsername() {
         authStore.setUser(res.data.admin);
       }
       showToast(res.data.message || 'Username updated successfully!', 'success');
-      closeEditUsernameModal();
+      isEditUsernameModalOpen.value = false;
+      editUsernameError.value = '';
     } else {
       editUsernameError.value = res.data?.message || 'Failed to update username';
     }

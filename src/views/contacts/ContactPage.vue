@@ -54,7 +54,7 @@
           <thead>
             <tr>
               <th scope="col" class="th-id ps-4">ID</th>
-              <th scope="col" class="th-chatid">Phone Number</th>
+              <th scope="col" class="th-chatid">Telegrams</th>
               <th scope="col" class="th-name">Name</th>
               <th scope="col" class="th-status text-center">Status</th>
               <th scope="col" class="th-error">Error Message</th>
