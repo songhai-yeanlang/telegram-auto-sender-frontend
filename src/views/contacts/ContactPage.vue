@@ -8,13 +8,13 @@
       </div>
 
       <!-- Action Buttons -->
-      <div class="d-flex align-items-center gap-2">
+      <div class="d-flex align-items-center gap-2 flex-wrap mt-2 mt-sm-0">
         <!-- Hidden file input for quick upload -->
         <input ref="fileInputRef" type="file" class="d-none" accept=".xlsx,.xls,.csv,.txt" @change="onFileSelected" />
 
         <!-- Upload File Button -->
         <button type="button"
-          class="btn btn-outline-primary upload-btn d-inline-flex align-items-center fw-semibold px-3 py-2"
+          class="btn btn-outline-primary upload-btn d-inline-flex align-items-center fw-semibold px-3 py-2 flex-grow-1 justify-content-center flex-sm-grow-0"
           @click="openUploadModal">
           <svg class="me-2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -26,7 +26,7 @@
         </button>
 
         <!-- Add Contact Button -->
-        <button type="button" class="btn btn-primary add-btn d-inline-flex align-items-center fw-semibold px-3 py-2"
+        <button type="button" class="btn btn-primary add-btn d-inline-flex align-items-center fw-semibold px-3 py-2 flex-grow-1 justify-content-center flex-sm-grow-0"
           @click="openAddModal">
           <svg class="me-2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">

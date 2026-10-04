@@ -85,7 +85,7 @@
         <!-- Left: Mobile Menu Toggle & Breadcrumbs -->
         <div class="d-flex align-items-center">
           <button
-            class="btn btn-link p-0 me-3 text-secondary d-lg-none"
+            class="btn btn-link p-0 me-2 text-secondary d-lg-none"
             type="button"
             @click="toggleMobileSidebar"
           >
@@ -98,8 +98,8 @@
 
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0 align-items-center small">
-              <li class="breadcrumb-item text-secondary">TG Sender</li>
-              <li class="breadcrumb-separator mx-2 text-muted">/</li>
+              <li class="breadcrumb-item text-secondary d-none d-sm-block">TG Sender</li>
+              <li class="breadcrumb-separator mx-2 text-muted d-none d-sm-block">/</li>
               <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">
                 {{ breadcrumbTitle }}
               </li>
@@ -112,18 +112,18 @@
           <!-- User Avatar & Username (Navigates to Settings) -->
           <router-link
             to="/settings"
-            class="user-pill d-flex align-items-center me-3 text-decoration-none"
+            class="user-pill d-flex align-items-center me-2 text-decoration-none"
             title="User Profile & Settings"
           >
-            <div class="avatar-badge d-flex align-items-center justify-content-center me-2 overflow-hidden">
+            <div class="avatar-badge d-flex align-items-center justify-content-center me-0 me-sm-2 overflow-hidden">
               <img v-if="userAvatarUrl" :src="userAvatarUrl" class="avatar-badge-img" alt="Avatar" />
               <span v-else>{{ userInitial }}</span>
             </div>
-            <span class="user-name text-dark fw-semibold small">{{ userName }}</span>
+            <span class="user-name text-dark fw-semibold small d-none d-sm-block">{{ userName }}</span>
           </router-link>
 
           <!-- Divider -->
-          <div class="header-divider me-3"></div>
+          <div class="header-divider me-2"></div>
 
           <!-- Logout Button -->
           <button
@@ -131,18 +131,18 @@
             class="logout-btn btn btn-link p-0 text-decoration-none d-flex align-items-center small text-secondary"
             @click="openLogoutModal"
           >
-            <svg class="logout-icon me-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="logout-icon me-0 me-sm-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
               <polyline points="16 17 21 12 16 7" />
               <line x1="21" y1="12" x2="9" y2="12" />
             </svg>
-            <span>Logout</span>
+            <span class="d-none d-sm-block">Logout</span>
           </button>
         </div>
       </header>
 
       <!-- Page Main Content Slot -->
-      <main class="page-content flex-grow-1 p-4 p-lg-5">
+      <main class="page-content flex-grow-1 p-3 p-lg-5">
         <slot />
       </main>
     </div>
