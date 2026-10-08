@@ -9,17 +9,12 @@
         </p>
       </div>
 
-  
+
     </div>
 
     <!-- Floating Toast Notification -->
-    <BaseToast
-      v-model="isToastVisible"
-      :message="toastMessage"
-      :type="toastType"
-      :duration="4000"
-      position="bottom-right"
-    />
+    <BaseToast v-model="isToastVisible" :message="toastMessage" :type="toastType" :duration="4000"
+      position="bottom-right" />
 
     <!-- Main Content Grid -->
     <div class="row g-4">
@@ -37,48 +32,63 @@
               </span>
             </div>
 
+            <!-- Image Upload -->
+            <div class="mb-3">
+            
+              <div class="position-relative">
+                <input type="file" id="imageUploadInput" 
+                  class="form-control file-input-clean shadow-none" 
+                  :class="{'pe-5': imagePreview}"
+                  accept="image/jpeg, image/png, image/webp, image/gif" 
+                  @change="handleImageUpload" />
+                
+                <button v-if="imagePreview" type="button"
+                  class="btn btn-sm text-danger position-absolute p-0 d-flex align-items-center justify-content-center" 
+                  style="top: 50%; right: 8px; transform: translateY(-50%); z-index: 5; border-radius: 50%; width: 24px; height: 24px; background-color: #fee2e2; border: 1px solid #fca5a5; transition: all 0.2s;"
+                  @mouseover="$event.currentTarget.style.backgroundColor='#fecaca'"
+                  @mouseout="$event.currentTarget.style.backgroundColor='#fee2e2'"
+                  @click="clearImage" title="Remove Image">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
             <!-- Message Textarea -->
             <div class="textarea-wrapper mb-3">
-              <textarea
-                id="broadcastMessage"
-                v-model="messageText"
-                rows="7"
+              <textarea id="broadcastMessage" v-model="messageText" rows="7"
                 class="form-control message-textarea shadow-none"
                 placeholder="Type your broadcast message here... E.g. Hello! We have an exciting special update for you today."
-                required
-              ></textarea>
+                required></textarea>
             </div>
 
             <!-- Quick Template Insert Tags -->
             <div class="d-flex align-items-center flex-wrap gap-2 mb-4">
-             
-         
-              <button
-                type="button"
-                class="btn btn-sm btn-link text-decoration-none small text-danger ms-auto p-0"
-                :disabled="!messageText"
-                @click="messageText = ''"
-              >
-                Clear text
+
+
+              <button type="button" class="btn btn-sm btn-link text-decoration-none small text-danger ms-auto p-0"
+                :disabled="!messageText && !imageFile" @click="messageText = ''; clearImage()">
+                Clear all
               </button>
             </div>
 
-           
+
 
             <!-- Start Broadcast Action Button -->
-            <button
-              type="button"
+            <button type="button"
               class="btn btn-primary w-100 py-3 d-flex align-items-center justify-content-center fw-semibold send-btn"
-              :disabled="!canSendBroadcast || isSending"
-              @click="openConfirmModal"
-            >
+              :disabled="!canSendBroadcast || isSending" @click="openConfirmModal">
               <span v-if="isSending" class="spinner-border spinner-border-sm me-2" role="status"></span>
-              <svg v-else class="me-2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg v-else class="me-2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="22" y1="2" x2="11" y2="13" />
                 <polygon points="22 2 15 22 11 13 2 9 22 2" />
               </svg>
               <span>
-                {{ isSending ? 'Broadcasting...' : `Send to ${selectedContactIds.length} Selected Contact${selectedContactIds.length === 1 ? '' : 's'}` }}
+                {{ isSending ? 'Broadcasting...' : `Send to ${selectedContactIds.length} Selected
+                Contact${selectedContactIds.length === 1 ? '' : 's'}` }}
               </span>
             </button>
           </div>
@@ -96,12 +106,15 @@
               <div class="telegram-bubble align-self-end text-white shadow-sm p-3 rounded-4">
                 <div class="bubble-sender fw-semibold small text-white-50 mb-1">Your Account</div>
                 <div class="bubble-text" style="white-space: pre-wrap; word-break: break-word;">
+                  <img v-if="imagePreview" :src="imagePreview" class="img-fluid rounded mb-2"
+                    style="max-height: 250px; width: 100%; object-fit: cover;" alt="Image preview" />
                   {{ messageText || 'Your message preview will appear here in real time...' }}
                 </div>
                 <div class="bubble-meta d-flex align-items-center justify-content-end gap-1 mt-1">
                   <span class="bubble-time small text-white-50">{{ currentTime }}</span>
                   <!-- Telegram double checkmarks -->
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="text-white-50">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                    stroke-linecap="round" stroke-linejoin="round" class="text-white-50">
                     <polyline points="18 6 7 17 2 12" />
                     <polyline points="22 10 15 17 12 14" />
                   </svg>
@@ -118,53 +131,34 @@
           <div class="card-header bg-white border-bottom p-4 pb-3">
             <div class="d-flex align-items-center justify-content-between mb-2">
               <h5 class="fw-bold text-dark mb-0 fs-6">Select Recipients</h5>
-              <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2 py-1 small fw-semibold">
+              <span
+                class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2 py-1 small fw-semibold">
                 {{ selectedContactIds.length }} / {{ filteredContacts.length }} Selected
               </span>
             </div>
 
             <!-- Search Field -->
             <div class="search-input-box mb-3">
-              <input
-                v-model="searchQuery"
-                type="text"
-                class="form-control form-control-sm search-input"
-                placeholder="Search by name or chat ID..."
-              />
+              <input v-model="searchQuery" type="text" class="form-control form-control-sm search-input"
+                placeholder="Search by name or chat ID..." />
             </div>
 
             <!-- Filter Pills Row -->
             <div class="d-flex align-items-center gap-1 flex-wrap">
-              <button
-                type="button"
-                class="btn btn-filter btn-sm rounded-pill px-3 py-1"
-                :class="{ active: statusFilter === 'all' }"
-                @click="statusFilter = 'all'"
-              >
+              <button type="button" class="btn btn-filter btn-sm rounded-pill px-3 py-1"
+                :class="{ active: statusFilter === 'all' }" @click="statusFilter = 'all'">
                 All ({{ contacts.length }})
               </button>
-              <button
-                type="button"
-                class="btn btn-filter btn-sm rounded-pill px-3 py-1"
-                :class="{ active: statusFilter === 'pending' }"
-                @click="statusFilter = 'pending'"
-              >
+              <button type="button" class="btn btn-filter btn-sm rounded-pill px-3 py-1"
+                :class="{ active: statusFilter === 'pending' }" @click="statusFilter = 'pending'">
                 Pending ({{ countByStatus('pending') }})
               </button>
-              <button
-                type="button"
-                class="btn btn-filter btn-sm rounded-pill px-3 py-1"
-                :class="{ active: statusFilter === 'failed' }"
-                @click="statusFilter = 'failed'"
-              >
+              <button type="button" class="btn btn-filter btn-sm rounded-pill px-3 py-1"
+                :class="{ active: statusFilter === 'failed' }" @click="statusFilter = 'failed'">
                 Failed ({{ countByStatus('failed') }})
               </button>
-              <button
-                type="button"
-                class="btn btn-filter btn-sm rounded-pill px-3 py-1"
-                :class="{ active: statusFilter === 'sent' }"
-                @click="statusFilter = 'sent'"
-              >
+              <button type="button" class="btn btn-filter btn-sm rounded-pill px-3 py-1"
+                :class="{ active: statusFilter === 'sent' }" @click="statusFilter = 'sent'">
                 Sent ({{ countByStatus('sent') }})
               </button>
             </div>
@@ -173,25 +167,16 @@
           <!-- Master Select All Bar -->
           <div class="px-4 py-2 bg-light border-bottom d-flex align-items-center justify-content-between small">
             <div class="form-check d-flex align-items-center mb-0">
-              <input
-                id="selectAllContacts"
-                type="checkbox"
-                class="form-check-input mt-0 me-2"
-                :checked="isAllSelected && filteredContacts.length > 0"
-                :indeterminate="isIndeterminate"
-                @change="toggleSelectAll"
-              />
+              <input id="selectAllContacts" type="checkbox" class="form-check-input mt-0 me-2"
+                :checked="isAllSelected && filteredContacts.length > 0" :indeterminate="isIndeterminate"
+                @change="toggleSelectAll" />
               <label for="selectAllContacts" class="form-check-label user-select-none text-secondary fw-semibold">
                 Select All Filtered
               </label>
             </div>
 
-            <button
-              v-if="selectedContactIds.length > 0"
-              type="button"
-              class="btn btn-link p-0 small text-decoration-none text-secondary"
-              @click="selectedContactIds = []"
-            >
+            <button v-if="selectedContactIds.length > 0" type="button"
+              class="btn btn-link p-0 small text-decoration-none text-secondary" @click="selectedContactIds = []">
               Clear selection
             </button>
           </div>
@@ -214,21 +199,13 @@
 
             <!-- Scrollable Contacts Checklist -->
             <ul v-else class="list-group list-group-flush mb-0">
-              <li
-                v-for="contact in filteredContacts"
-                :key="contact.id"
+              <li v-for="contact in filteredContacts" :key="contact.id"
                 class="list-group-item list-group-item-action d-flex align-items-center justify-content-between px-4 py-3 contact-row"
-                @click="toggleContactSelection(contact.id)"
-              >
+                @click="toggleContactSelection(contact.id)">
                 <div class="d-flex align-items-center me-2">
-                  <input
-                    type="checkbox"
-                    class="form-check-input mt-0 me-3 flex-shrink-0"
-                    :value="contact.id"
-                    :checked="selectedContactIds.includes(contact.id)"
-                    @click.stop
-                    @change="toggleContactSelection(contact.id)"
-                  />
+                  <input type="checkbox" class="form-check-input mt-0 me-3 flex-shrink-0" :value="contact.id"
+                    :checked="selectedContactIds.includes(contact.id)" @click.stop
+                    @change="toggleContactSelection(contact.id)" />
                   <div>
                     <div class="fw-semibold text-dark text-truncate contact-chatid">
                       {{ contact.chat_id }}
@@ -240,10 +217,7 @@
                 </div>
 
                 <!-- Status Badge -->
-                <span
-                  class="badge status-pill text-capitalize"
-                  :class="`status-${contact.status}`"
-                >
+                <span class="badge status-pill text-capitalize" :class="`status-${contact.status}`">
                   {{ contact.status }}
                 </span>
               </li>
@@ -260,7 +234,8 @@
       <div class="card border-0 shadow modal-card" style="max-width: 480px; width: 100%;">
         <div class="card-body p-4 text-center">
           <div class="broadcast-icon-box mx-auto mb-3 text-primary d-flex align-items-center justify-content-center">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
               <line x1="22" y1="2" x2="11" y2="13" />
               <polygon points="22 2 15 22 11 13 2 9 22 2" />
             </svg>
@@ -268,7 +243,8 @@
 
           <h5 class="fw-bold text-dark mb-2">Ready to Start Broadcast?</h5>
           <p class="text-secondary small mb-4">
-            You are about to queue messages for <strong class="text-dark">{{ selectedContactIds.length }}</strong> selected contacts.
+            You are about to queue messages for <strong class="text-dark">{{ selectedContactIds.length }}</strong>
+            selected contacts.
             The backend will process them in sequence with anti-spam safe intervals.
           </p>
 
@@ -288,20 +264,11 @@
           </div>
 
           <div class="d-flex justify-content-center gap-2">
-            <button
-              type="button"
-              class="btn btn-light px-4"
-              :disabled="isSending"
-              @click="isConfirmModalOpen = false"
-            >
+            <button type="button" class="btn btn-light px-4" :disabled="isSending" @click="isConfirmModalOpen = false">
               Cancel
             </button>
-            <button
-              type="button"
-              class="btn btn-primary px-4 fw-semibold"
-              :disabled="isSending"
-              @click="executeBroadcast"
-            >
+            <button type="button" class="btn btn-primary px-4 fw-semibold" :disabled="isSending"
+              @click="executeBroadcast">
               <span v-if="isSending" class="spinner-border spinner-border-sm me-1"></span>
               Confirm & Start
             </button>
@@ -320,6 +287,8 @@ import BaseToast from '@/components/base/BaseToast.vue';
 
 // State
 const messageText = ref('');
+const imageFile = ref(null);
+const imagePreview = ref(null);
 const contacts = ref([]);
 const selectedContactIds = ref([]);
 const searchQuery = ref('');
@@ -412,8 +381,23 @@ function insertTag(tag) {
   messageText.value += ` ${tag} `;
 }
 
+function handleImageUpload(event) {
+  const file = event.target.files[0];
+  if (file) {
+    imageFile.value = file;
+    imagePreview.value = URL.createObjectURL(file);
+  }
+}
+
+function clearImage() {
+  imageFile.value = null;
+  imagePreview.value = null;
+  const fileInput = document.querySelector('input[type="file"]');
+  if (fileInput) fileInput.value = '';
+}
+
 const canSendBroadcast = computed(() => {
-  return messageText.value.trim().length > 0 && selectedContactIds.value.length > 0;
+  return (messageText.value.trim().length > 0 || imageFile.value !== null) && selectedContactIds.value.length > 0;
 });
 
 // ─────────────────────────────────────────────────────────────
@@ -450,14 +434,27 @@ async function executeBroadcast() {
   isSending.value = true;
 
   try {
-    const response = await api.post('/broadcast/start', {
-      message: messageText.value.trim(),
-      contactIds: selectedContactIds.value
+    const formData = new FormData();
+    formData.append('message', messageText.value.trim());
+    formData.append('contactIds', JSON.stringify(selectedContactIds.value));
+    if (imageFile.value) {
+      formData.append('image', imageFile.value);
+    }
+
+    const response = await api.post('/broadcast/start', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
     });
 
     if (response.data && response.data.success) {
       isConfirmModalOpen.value = false;
       showToast(response.data.message || 'Broadcast started successfully!', 'success');
+
+      messageText.value = '';
+      clearImage();
+      selectedContactIds.value = [];
+
       // Refresh contacts after a delay
       setTimeout(() => {
         fetchContacts();
@@ -693,6 +690,7 @@ onMounted(() => {
     transform: scale(0.96);
     opacity: 0;
   }
+
   to {
     transform: scale(1);
     opacity: 1;
@@ -704,5 +702,37 @@ onMounted(() => {
   height: 56px;
   border-radius: 50%;
   background-color: rgba(36, 161, 222, 0.1);
+}
+/* Clean File Input */
+.file-input-clean {
+  background-color: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.file-input-clean:hover {
+  border-color: #cbd5e1;
+}
+
+.file-input-clean::file-selector-button {
+  background-color: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  color: #0f172a;
+  padding: 6px 14px;
+  margin-right: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.file-input-clean::file-selector-button:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
 }
 </style>
