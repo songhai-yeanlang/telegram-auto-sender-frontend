@@ -734,7 +734,7 @@ onMounted(() => {
 
 .custom-table thead tr th {
   background-color: #ffffff;
-  font-size: 11.5px;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.5px;
   color: #64748b;
