@@ -73,7 +73,7 @@
 <script setup>
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
-import logoTelegram from '@/assets/images/logoTelegram.png';
+import logoTelegram from '@/assets/images/logoSystem.png';
 
 const router = useRouter();
 

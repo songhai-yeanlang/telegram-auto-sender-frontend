@@ -53,7 +53,10 @@
         <table class="table table-hover align-middle mb-0 custom-table">
           <thead>
             <tr>
-              <th scope="col" class="th-id ps-4">ID</th>
+              <th scope="col" class="th-checkbox ps-4" style="width: 40px;">
+                <input class="form-check-input" type="checkbox" :checked="isAllSelected" @change="toggleSelectAll" />
+              </th>
+              <th scope="col" class="th-id">ID</th>
               <th scope="col" class="th-chatid">Telegrams</th>
               <th scope="col" class="th-name">Name</th>
               <th scope="col" class="th-status text-center">Status</th>
@@ -65,8 +68,12 @@
             <!-- Loading Shimmer Skeleton Rows -->
             <template v-if="isLoading">
               <tr v-for="n in 6" :key="`shimmer-${n}`" class="align-middle">
-                <!-- ID -->
+                <!-- Checkbox -->
                 <td class="ps-4 py-3">
+                  <BaseShimmer width="16px" height="16px" border-radius="4px" />
+                </td>
+                <!-- ID -->
+                <td class="py-3">
                   <BaseShimmer width="22px" height="14px" border-radius="4px" />
                 </td>
                 <!-- Phone Number / Chat ID -->
@@ -97,7 +104,7 @@
 
             <!-- Empty State -->
             <tr v-else-if="paginatedContacts.length === 0">
-              <td colspan="6" class="text-center py-5">
+              <td colspan="7" class="text-center py-5">
                 <div class="empty-icon-box mx-auto mb-2 d-flex align-items-center justify-content-center text-muted">
                   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -113,8 +120,13 @@
 
             <!-- Contact Data Rows -->
             <tr v-for="(contact, index) in paginatedContacts" :key="contact.id">
+              <!-- Checkbox -->
+              <td class="ps-4">
+                <input class="form-check-input" type="checkbox" :value="contact.id" v-model="selectedContacts" />
+              </td>
+
               <!-- ID -->
-              <td class="ps-4 text-secondary small">
+              <td class="text-secondary small">
                 {{ (currentPage - 1) * pageSize + index + 1 }}
               </td>
 
@@ -184,6 +196,17 @@
 
         <!-- Pagination Controls -->
         <div class="d-flex align-items-center gap-2">
+          <!-- Bulk Delete Button -->
+          <button v-if="selectedContacts.length > 0" type="button" 
+            class="btn btn-action-icon p-1 text-danger delete-icon me-2" 
+            title="Delete Selected" 
+            @click="openDeleteMultipleModal">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+            </svg>
+          </button>
+
           <button type="button" class="btn btn-outline-secondary btn-sm px-3 pagination-btn"
             :disabled="currentPage <= 1" @click="currentPage--">
             Previous
@@ -354,6 +377,34 @@
         </div>
       </div>
     </div>
+    <!-- ========================================================
+         MODAL: Delete Multiple Confirmation
+         ======================================================== -->
+    <div v-if="isDeleteMultipleModalOpen" class="modal-backdrop-custom d-flex align-items-center justify-content-center p-3">
+      <div class="card border-0 shadow modal-card" style="max-width: 440px; width: 100%;">
+        <div class="card-body p-4 text-center">
+          <div class="trash-icon-box mx-auto mb-3 text-danger d-flex align-items-center justify-content-center">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+            </svg>
+          </div>
+
+          <h5 class="fw-bold text-dark mb-2">Delete Selected Contacts</h5>
+          <p class="text-secondary small mb-4">
+            Are you sure you want to delete <strong class="text-dark">{{ selectedContacts.length }}</strong> selected contacts? This action cannot be undone.
+          </p>
+
+          <div class="d-flex justify-content-center gap-2">
+            <button type="button" class="btn btn-light px-4" @click="isDeleteMultipleModalOpen = false">Cancel</button>
+            <button type="button" class="btn btn-danger px-4" :disabled="isSubmitting" @click="confirmDeleteMultipleContacts">
+              <span v-if="isSubmitting" class="spinner-border spinner-border-sm me-1"></span>
+              Delete All
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </AppLayout>
 </template>
 
@@ -390,7 +441,25 @@ const isAddModalOpen = ref(false);
 const isEditModalOpen = ref(false);
 const isUploadModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
+const isDeleteMultipleModalOpen = ref(false);
 const contactToDelete = ref(null);
+
+const selectedContacts = ref([]);
+
+const isAllSelected = computed(() => {
+  if (paginatedContacts.value.length === 0) return false;
+  return paginatedContacts.value.every(c => selectedContacts.value.includes(c.id));
+});
+
+function toggleSelectAll(event) {
+  if (event.target.checked) {
+    const idsToAdd = paginatedContacts.value.map(c => c.id).filter(id => !selectedContacts.value.includes(id));
+    selectedContacts.value.push(...idsToAdd);
+  } else {
+    const idsToRemove = paginatedContacts.value.map(c => c.id);
+    selectedContacts.value = selectedContacts.value.filter(id => !idsToRemove.includes(id));
+  }
+}
 
 const fileInputRef = ref(null);
 const selectedFile = ref(null);
@@ -527,6 +596,31 @@ async function confirmDeleteContact() {
     }
   } catch (error) {
     showToast(error.response?.data?.message || 'Error deleting contact', 'danger');
+  } finally {
+    isSubmitting.value = false;
+  }
+}
+
+function openDeleteMultipleModal() {
+  isDeleteMultipleModalOpen.value = true;
+}
+
+async function confirmDeleteMultipleContacts() {
+  if (selectedContacts.value.length === 0) return;
+
+  isSubmitting.value = true;
+  try {
+    const response = await api.post('/contacts/delete-multiple', { ids: selectedContacts.value });
+    if (response.data && response.data.success) {
+      showToast(response.data.message || 'Contacts deleted successfully!', 'success');
+      isDeleteMultipleModalOpen.value = false;
+      selectedContacts.value = [];
+      await fetchContacts();
+    } else {
+      showToast(response.data?.message || 'Failed to delete contacts', 'danger');
+    }
+  } catch (error) {
+    showToast(error.response?.data?.message || 'Error deleting contacts', 'danger');
   } finally {
     isSubmitting.value = false;
   }

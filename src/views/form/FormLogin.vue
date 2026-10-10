@@ -128,7 +128,7 @@ import api from '@/api/api';
 
 import BaseInput from '@/components/base/BaseInput.vue';
 import BaseButton from '@/components/base/BaseButton.vue';
-import logoTelegram from '@/assets/images/logoTelegram.png';
+import logoTelegram from '@/assets/images/logoSystem.png';
 
 const router = useRouter();
 const authStore = useAuthStore();

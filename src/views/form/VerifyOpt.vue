@@ -117,7 +117,7 @@ import { ref, reactive, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '@/api/api';
 import BaseButton from '@/components/base/BaseButton.vue';
-import logoTelegram from '@/assets/images/logoTelegram.png';
+import logoTelegram from '@/assets/images/logoSystem.png';
 
 const router = useRouter();
 
