@@ -150,7 +150,7 @@
               <!-- Error Message -->
               <td class="small">
                 <span v-if="contact.error_message" class="text-danger error-text">
-                  {{ formatErrorMessage(contact.error_message) }}
+                  {{ contact.error_message }}
                 </span>
                 <span v-else class="text-muted opacity-50">—</span>
               </td>
@@ -232,15 +232,15 @@
 
           <form @submit.prevent="submitAddContact">
             <div class="mb-3">
-              <label class="form-label small fw-bold  text-secondary">Nunber Phone</label>
-              <input v-model="addForm.chatId" type="text" class="form-control" placeholder="e.g. +8856188388"
+              <label class="form-label small fw-bold text-secondary">Phone Number</label>
+              <input v-model="addForm.chatId" type="text" class="form-control" placeholder="e.g. +8556188388"
                 required />
              
             </div>
 
             <div class="mb-4">
               <label class="form-label small fw-bold  text-secondary">Contact Name</label>
-              <input v-model="addForm.name" type="text" class="form-control" placeholder="e.g. Keo Samnang" />
+              <input v-model="addForm.name" type="text" class="form-control" placeholder="e.g. Can be null" />
             </div>
 
             <div class="d-flex justify-content-end gap-2">
@@ -481,11 +481,6 @@ function showToast(message, type = 'success') {
   toastMessage.value = message;
   toastType.value = type;
   isToastVisible.value = true;
-}
-
-function formatErrorMessage(msg) {
-  if (!msg) return '—';
-  return 'Cannot contact this Telegram account...';
 }
 
 // ─────────────────────────────────────────────────────────────
