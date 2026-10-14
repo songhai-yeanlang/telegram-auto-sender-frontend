@@ -200,9 +200,9 @@
                   </div>
                   <p class="mb-0 small text-dark text-truncate" style="max-width: 380px;">{{ job.message_text || '(Image only)' }}</p>
                 </div>
-                <button v-if="job.status === 'pending'" type="button"
+                <button v-if="job.status !== 'processing'" type="button"
                   class="btn btn-sm btn-delete-schedule flex-shrink-0" :disabled="deletingJobId === job.id"
-                  @click="deleteScheduledJob(job.id)" title="Cancel Schedule">
+                  @click="deleteScheduledJob(job.id)" :title="job.status === 'pending' ? 'Cancel Schedule' : 'Delete'">
                   <span v-if="deletingJobId === job.id" class="spinner-border spinner-border-sm"></span>
                   <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -549,13 +549,13 @@ async function deleteScheduledJob(id) {
   try {
     const response = await api.delete(`/broadcast/scheduled/${id}`);
     if (response.data && response.data.success) {
-      showToast('Scheduled broadcast cancelled!', 'success');
+      showToast('Scheduled broadcast deleted successfully!', 'success');
       scheduledJobs.value = scheduledJobs.value.filter((j) => j.id !== id);
     } else {
-      showToast(response.data?.message || 'Failed to cancel schedule', 'danger');
+      showToast(response.data?.message || 'Failed to delete schedule', 'danger');
     }
   } catch (error) {
-    showToast(error.response?.data?.message || 'Error cancelling schedule', 'danger');
+    showToast(error.response?.data?.message || 'Error deleting schedule', 'danger');
   } finally {
     deletingJobId.value = null;
   }

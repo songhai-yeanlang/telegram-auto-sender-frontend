@@ -150,7 +150,7 @@
               <!-- Error Message -->
               <td class="small">
                 <span v-if="contact.error_message" class="text-danger error-text">
-                  {{ contact.error_message }}
+                  {{ formatErrorMessage(contact.error_message) }}
                 </span>
                 <span v-else class="text-muted opacity-50">—</span>
               </td>
@@ -481,6 +481,11 @@ function showToast(message, type = 'success') {
   toastMessage.value = message;
   toastType.value = type;
   isToastVisible.value = true;
+}
+
+function formatErrorMessage(msg) {
+  if (!msg) return '—';
+  return 'Cannot contact this Telegram account...';
 }
 
 // ─────────────────────────────────────────────────────────────
