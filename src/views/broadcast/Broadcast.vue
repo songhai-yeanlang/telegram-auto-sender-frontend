@@ -367,7 +367,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import api from '@/api/api';
 import AppLayout from '@/layout/AppLayout.vue';
 import BaseToast from '@/components/base/BaseToast.vue';
@@ -514,14 +514,40 @@ function clearImage() {
   if (fileInput) fileInput.value = '';
 }
 
-async function fetchContacts() {
-  isLoadingContacts.value = true;
+let broadcastPollInterval = null;
+
+function startBroadcastPolling() {
+  stopBroadcastPolling();
+  broadcastPollInterval = setInterval(async () => {
+    try {
+      const res = await api.get('/broadcast/status');
+      await fetchContacts(false);
+      if (!res.data?.isBroadcasting) {
+        stopBroadcastPolling();
+      }
+    } catch {
+      stopBroadcastPolling();
+    }
+  }, 4000);
+}
+
+function stopBroadcastPolling() {
+  if (broadcastPollInterval) {
+    clearInterval(broadcastPollInterval);
+    broadcastPollInterval = null;
+  }
+}
+
+async function fetchContacts(isInitialLoad = false) {
+  isLoadingContacts.value = isInitialLoad;
   try {
     const response = await api.get('/contacts/getAll');
     if (response.data && response.data.success) {
       contacts.value = response.data.data || [];
-      const pendingIds = contacts.value.filter((c) => c.status === 'pending').map((c) => c.id);
-      if (pendingIds.length > 0) selectedContactIds.value = pendingIds;
+      if (isInitialLoad && selectedContactIds.value.length === 0) {
+        const pendingIds = contacts.value.filter((c) => c.status === 'pending').map((c) => c.id);
+        if (pendingIds.length > 0) selectedContactIds.value = pendingIds;
+      }
     }
   } catch (error) {
     showToast(error.response?.data?.message || 'Failed to load contacts', 'danger');
@@ -580,7 +606,7 @@ async function executeBroadcast() {
       messageText.value = '';
       clearImage();
       selectedContactIds.value = [];
-      setTimeout(() => fetchContacts(), 2000);
+      startBroadcastPolling();
     } else {
       showToast(response.data?.message || 'Failed to start broadcast', 'danger');
     }
@@ -636,8 +662,12 @@ onMounted(() => {
     } catch { showToast(pendingToast, 'success'); }
     sessionStorage.removeItem('pending_toast');
   }
-  fetchContacts();
+  fetchContacts(true);
   fetchScheduledJobs();
+});
+
+onUnmounted(() => {
+  stopBroadcastPolling();
 });
 </script>
 
