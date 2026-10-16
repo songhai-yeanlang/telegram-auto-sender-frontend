@@ -538,21 +538,17 @@ function stopBroadcastPolling() {
   }
 }
 
-async function fetchContacts(isInitialLoad = false) {
-  isLoadingContacts.value = isInitialLoad;
+async function fetchContacts(showLoading = true) {
+  if (showLoading) isLoadingContacts.value = true;
   try {
     const response = await api.get('/contacts/getAll');
     if (response.data && response.data.success) {
       contacts.value = response.data.data || [];
-      if (isInitialLoad && selectedContactIds.value.length === 0) {
-        const pendingIds = contacts.value.filter((c) => c.status === 'pending').map((c) => c.id);
-        if (pendingIds.length > 0) selectedContactIds.value = pendingIds;
-      }
     }
   } catch (error) {
     showToast(error.response?.data?.message || 'Failed to load contacts', 'danger');
   } finally {
-    isLoadingContacts.value = false;
+    if (showLoading) isLoadingContacts.value = false;
   }
 }
 
