@@ -485,7 +485,7 @@ function showToast(message, type = 'success') {
 
 function formatErrorMessage(msg) {
   if (!msg) return '—';
-  return msg;
+  return 'Cannot contact this account...';
 }
 
 // ─────────────────────────────────────────────────────────────
