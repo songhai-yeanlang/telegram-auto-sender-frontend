@@ -23,8 +23,12 @@ api.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       const authStore = useAuthStore();
-      authStore.logout();
-      if (window.location.pathname !== '/login') {
+      const publicAuthPaths = ['/login', '/verify-email', '/verify-otp', '/reset-password', '/forgot-password'];
+      const currentPath = window.location.pathname;
+
+      // Only clear credentials and redirect to /login if user is not on a public auth page
+      if (!publicAuthPaths.some((p) => currentPath.startsWith(p))) {
+        authStore.logout();
         window.location.href = '/login';
       }
     }

@@ -77,9 +77,11 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token');
+  const guestOnlyPaths = ['/login', '/verify-email', '/verify-otp', '/reset-password', '/forgot-password'];
+
   if (to.meta.requiresAuth && !token) {
     next('/login');
-  } else if (to.path === '/login' && token) {
+  } else if (guestOnlyPaths.includes(to.path) && token) {
     next('/contacts');
   } else {
     next();

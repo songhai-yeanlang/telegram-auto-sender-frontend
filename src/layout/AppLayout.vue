@@ -207,6 +207,7 @@
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/authStore';
+import api from '@/api/api';
 
 const props = defineProps({
   activeRoute: {
@@ -260,10 +261,16 @@ function closeLogoutModal() {
   showLogoutModal.value = false;
 }
 
-function confirmLogout() {
+async function confirmLogout() {
   showLogoutModal.value = false;
-  authStore.logout();
-  router.push('/login');
+  try {
+    await api.post('/auth/logout');
+  } catch {
+    // Non-critical if offline or network fails
+  } finally {
+    authStore.logout();
+    router.push('/login');
+  }
 }
 </script>
 

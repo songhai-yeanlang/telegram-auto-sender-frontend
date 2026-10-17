@@ -145,11 +145,13 @@ const errorMessage = ref('');
 
 // ─── Load saved credentials on mount ───────────────────────────
 onMounted(() => {
+  // Security clean-up: remove any legacy plaintext password from localStorage
+  localStorage.removeItem('login_saved_password');
+
   const savedRemember = localStorage.getItem('login_remember_me');
   if (savedRemember === 'true') {
     form.rememberMe = true;
     form.identifier = localStorage.getItem('login_saved_identifier') || '';
-    form.password   = localStorage.getItem('login_saved_password')   || '';
   }
 });
 
@@ -176,16 +178,15 @@ async function handleLogin() {
       authStore.setToken(token);
       authStore.setUser(admin);
 
-      // ─── Save or clear remembered credentials ──────────────
+      // ─── Save or clear remembered identifier ──────────────
       if (form.rememberMe) {
-        localStorage.setItem('login_remember_me',       'true');
-        localStorage.setItem('login_saved_identifier',  form.identifier.trim());
-        localStorage.setItem('login_saved_password',    form.password);
+        localStorage.setItem('login_remember_me', 'true');
+        localStorage.setItem('login_saved_identifier', form.identifier.trim());
       } else {
         localStorage.removeItem('login_remember_me');
         localStorage.removeItem('login_saved_identifier');
-        localStorage.removeItem('login_saved_password');
       }
+      localStorage.removeItem('login_saved_password');
 
       // Store toast notification for dashboard
       sessionStorage.setItem(

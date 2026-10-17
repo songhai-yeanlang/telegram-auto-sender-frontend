@@ -1,5 +1,5 @@
 <template>
-  x<div class="login-page container-fluid min-vh-100 d-flex align-items-center justify-content-center py-4">
+  <div class="login-page container-fluid min-vh-100 d-flex align-items-center justify-content-center py-4">
     <!-- Bootstrap Card -->
     <div class="card border-0 shadow-sm mx-auto login-card" style="max-width: 500px; width: 100%;">
       <div class="card-body p-4 p-sm-5">
