@@ -1,14 +1,79 @@
 <template>
   <AppLayout active-route="contacts" breadcrumb-title="Contacts">
     <!-- Page Header & Action Buttons -->
-    <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 mb-4">
-      <div>
+
+    <div class="d-flex flex-column flex-sm-row align-items-sm-start justify-content-between gap-3 mb-4">
+      <!-- <div class="">
         <h1 class="page-title h3 fw-bold text-dark mb-1">Contacts</h1>
         <p class="text-secondary small mb-0">Manage your contact list and broadcast deliverability</p>
+      </div> -->
+
+      <div class="d-flex justify-content-end " style="width: 550px;">
+        <!-- Pill Search Bar with Status Dropdown (Matching Requested Design) -->
+        <div class="pill-search-bar  d-flex align-items-center position-relative w-100">
+          <svg class="pill-search-icon ms-1 me-2" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input v-model="searchQuery" type="text"
+            class="pill-search-input flex-grow-1 border-0 bg-transparent shadow-none" placeholder="Search here ...."
+            @input="onSearchInput" />
+          <button v-if="searchQuery" type="button"
+            class="pill-btn-clear p-0 border-0 bg-transparent d-flex align-items-center justify-content-center me-2"
+            title="Clear Search" @click="clearSearch">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+
+          <span class="pill-divider me-1"></span>
+
+          <!-- Dropdown Filter for Status (All ▾) -->
+          <div class="position-relative pill-dropdown-wrapper">
+            <button type="button" class="pill-dropdown-trigger d-flex align-items-center gap-1 border-0 bg-transparent"
+              @click.stop="isDropdownOpen = !isDropdownOpen">
+              <span>{{ currentFilterLabel }}</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                stroke-linecap="round" stroke-linejoin="round" :class="{ 'rotate-180': isDropdownOpen }">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+
+            <!-- Dropdown Menu -->
+            <div v-if="isDropdownOpen" class="pill-dropdown-menu position-absolute" @click.stop>
+              <button type="button" class="pill-dropdown-item d-flex align-items-center justify-content-between"
+                :class="{ active: statusFilter === 'all' }" @click="selectStatusFilter('all')">
+                <span>All</span>
+                <span class="badge rounded-pill bg-light text-secondary ms-2 small">{{ contacts.length }}</span>
+              </button>
+              <button type="button" class="pill-dropdown-item d-flex align-items-center justify-content-between"
+                :class="{ active: statusFilter === 'pending' }" @click="selectStatusFilter('pending')">
+                <span>Pending</span>
+                <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis ms-2 small">{{
+                  countByStatus('pending') }}</span>
+              </button>
+              <button type="button" class="pill-dropdown-item d-flex align-items-center justify-content-between"
+                :class="{ active: statusFilter === 'sent' }" @click="selectStatusFilter('sent')">
+                <span>Sent</span>
+                <span class="badge rounded-pill bg-success-subtle text-success-emphasis ms-2 small">{{
+                  countByStatus('sent') }}</span>
+              </button>
+              <button type="button" class="pill-dropdown-item d-flex align-items-center justify-content-between"
+                :class="{ active: statusFilter === 'failed' }" @click="selectStatusFilter('failed')">
+                <span>Failed</span>
+                <span class="badge rounded-pill bg-danger-subtle text-danger-emphasis ms-2 small">{{
+                  countByStatus('failed') }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Action Buttons -->
-      <div class="d-flex align-items-center gap-2 flex-wrap mt-2 mt-sm-0">
+      <div class="d-flex align-items-center gap-2 flex-wrap mt-2 mt-sm-0 align-self-sm-start">
         <!-- Hidden file input for quick upload -->
         <input ref="fileInputRef" type="file" class="d-none" accept=".xlsx,.xls,.csv,.txt" @change="onFileSelected" />
 
@@ -26,7 +91,8 @@
         </button>
 
         <!-- Add Contact Button -->
-        <button type="button" class="btn btn-primary add-btn d-inline-flex align-items-center fw-semibold px-3 py-2 flex-grow-1 justify-content-center flex-sm-grow-0"
+        <button type="button"
+          class="btn btn-primary add-btn d-inline-flex align-items-center fw-semibold px-3 py-2 flex-grow-1 justify-content-center flex-sm-grow-0"
           @click="openAddModal">
           <svg class="me-2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -39,15 +105,11 @@
     </div>
 
     <!-- Floating Toast Notification -->
-    <BaseToast
-      v-model="isToastVisible"
-      :message="toastMessage"
-      :type="toastType"
-      :duration="3500"
-      position="bottom-right"
-    />
+    <BaseToast v-model="isToastVisible" :message="toastMessage" :type="toastType" :duration="3500"
+      position="bottom-right" />
 
     <!-- Contacts Table Card -->
+
     <div class="card border-0 shadow-sm table-card">
       <div class="table-responsive">
         <table class="table table-hover align-middle mb-0 custom-table">
@@ -113,8 +175,18 @@
                     <line x1="22" y1="11" x2="16" y2="11" />
                   </svg>
                 </div>
-                <p class="text-secondary small mb-1 fw-semibold">No contacts found</p>
-                <p class="text-muted small mb-0">Click "Add Contact" or "Upload File" to import contacts.</p>
+                <template v-if="searchQuery.trim() || statusFilter !== 'all'">
+                  <p class="text-secondary small mb-1 fw-semibold">No contacts match your filter</p>
+                  <p class="text-muted small mb-3">Try adjusting your search query or status filter.</p>
+                  <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1"
+                    @click="resetFilters">
+                    Reset Filter
+                  </button>
+                </template>
+                <template v-else>
+                  <p class="text-secondary small mb-1 fw-semibold">No contacts found</p>
+                  <p class="text-muted small mb-0">Click "Add Contact" or "Upload File" to import contacts.</p>
+                </template>
               </td>
             </tr>
 
@@ -188,20 +260,24 @@
       <div
         class="card-footer bg-white border-top d-flex align-items-center justify-content-between px-4 py-3 flex-wrap gap-2">
         <div class="text-secondary small">
-          Showing <span class="fw-semibold text-dark">{{ contacts.length > 0 ? (currentPage - 1) * pageSize + 1 : 0
-            }}</span>
-          to <span class="fw-semibold text-dark">{{ Math.min(currentPage * pageSize, contacts.length) }}</span>
-          of <span class="fw-semibold text-dark">{{ contacts.length }}</span> contacts
+          Showing <span class="fw-semibold text-dark">{{ filteredContacts.length > 0 ? (currentPage - 1) * pageSize + 1
+            : 0
+          }}</span>
+          to <span class="fw-semibold text-dark">{{ Math.min(currentPage * pageSize, filteredContacts.length) }}</span>
+          of <span class="fw-semibold text-dark">{{ filteredContacts.length }}</span> contacts
+          <span v-if="filteredContacts.length !== contacts.length" class="text-muted ms-1">
+            (filtered from {{ contacts.length }} total)
+          </span>
         </div>
 
         <!-- Pagination Controls -->
         <div class="d-flex align-items-center gap-2">
           <!-- Bulk Delete Button -->
-          <button v-if="selectedContacts.length > 0" type="button" 
-            class="btn btn-action-icon p-1 text-danger delete-icon me-2" 
-            title="Delete Selected" 
+          <button v-if="selectedContacts.length > 0" type="button"
+            class="btn btn-action-icon p-1 text-danger delete-icon me-2" title="Delete Selected"
             @click="openDeleteMultipleModal">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
               <polyline points="3 6 5 6 21 6" />
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
             </svg>
@@ -235,7 +311,7 @@
               <label class="form-label small fw-bold text-secondary">Phone Number</label>
               <input v-model="addForm.chatId" type="text" class="form-control" placeholder="e.g. +8556188388"
                 required />
-             
+
             </div>
 
             <div class="mb-4">
@@ -380,7 +456,8 @@
     <!-- ========================================================
          MODAL: Delete Multiple Confirmation
          ======================================================== -->
-    <div v-if="isDeleteMultipleModalOpen" class="modal-backdrop-custom d-flex align-items-center justify-content-center p-3">
+    <div v-if="isDeleteMultipleModalOpen"
+      class="modal-backdrop-custom d-flex align-items-center justify-content-center p-3">
       <div class="card border-0 shadow modal-card" style="max-width: 440px; width: 100%;">
         <div class="card-body p-4 text-center">
           <div class="trash-icon-box mx-auto mb-3 text-danger d-flex align-items-center justify-content-center">
@@ -392,12 +469,14 @@
 
           <h5 class="fw-bold text-dark mb-2">Delete Selected Contacts</h5>
           <p class="text-secondary small mb-4">
-            Are you sure you want to delete <strong class="text-dark">{{ selectedContacts.length }}</strong> selected contacts? This action cannot be undone.
+            Are you sure you want to delete <strong class="text-dark">{{ selectedContacts.length }}</strong> selected
+            contacts? This action cannot be undone.
           </p>
 
           <div class="d-flex justify-content-center gap-2">
             <button type="button" class="btn btn-light px-4" @click="isDeleteMultipleModalOpen = false">Cancel</button>
-            <button type="button" class="btn btn-danger px-4" :disabled="isSubmitting" @click="confirmDeleteMultipleContacts">
+            <button type="button" class="btn btn-danger px-4" :disabled="isSubmitting"
+              @click="confirmDeleteMultipleContacts">
               <span v-if="isSubmitting" class="spinner-border spinner-border-sm me-1"></span>
               Delete All
             </button>
@@ -409,7 +488,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue';
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue';
 import api from '@/api/api';
 import AppLayout from '@/layout/AppLayout.vue';
 import BaseToast from '@/components/base/BaseToast.vue';
@@ -423,18 +502,76 @@ const toastMessage = ref('');
 const toastType = ref('success');
 const isToastVisible = ref(false);
 
+// Search & Filter State
+const searchQuery = ref('');
+const statusFilter = ref('all');
+const isDropdownOpen = ref(false);
+
+const currentFilterLabel = computed(() => {
+  if (statusFilter.value === 'pending') return 'Pending';
+  if (statusFilter.value === 'sent') return 'Sent';
+  if (statusFilter.value === 'failed') return 'Failed';
+  return 'All';
+});
+
 // Pagination State
 const currentPage = ref(1);
 const pageSize = 10;
 
+const filteredContacts = computed(() => {
+  return contacts.value.filter((contact) => {
+    if (statusFilter.value !== 'all' && contact.status !== statusFilter.value) {
+      return false;
+    }
+    if (searchQuery.value.trim()) {
+      const q = searchQuery.value.trim().toLowerCase();
+      const matchChatId = contact.chat_id ? contact.chat_id.toLowerCase().includes(q) : false;
+      const matchName = contact.name && contact.name !== 'none' ? contact.name.toLowerCase().includes(q) : false;
+      return matchChatId || matchName;
+    }
+    return true;
+  });
+});
+
 const totalPages = computed(() => {
-  return Math.ceil(contacts.value.length / pageSize) || 1;
+  return Math.ceil(filteredContacts.value.length / pageSize) || 1;
 });
 
 const paginatedContacts = computed(() => {
   const start = (currentPage.value - 1) * pageSize;
-  return contacts.value.slice(start, start + pageSize);
+  return filteredContacts.value.slice(start, start + pageSize);
 });
+
+function countByStatus(status) {
+  return contacts.value.filter((c) => c.status === status).length;
+}
+
+function onSearchInput() {
+  currentPage.value = 1;
+}
+
+function clearSearch() {
+  searchQuery.value = '';
+  currentPage.value = 1;
+}
+
+function selectStatusFilter(status) {
+  statusFilter.value = status;
+  currentPage.value = 1;
+  isDropdownOpen.value = false;
+}
+
+function resetFilters() {
+  searchQuery.value = '';
+  statusFilter.value = 'all';
+  currentPage.value = 1;
+}
+
+function closeDropdownOnClickOutside(e) {
+  if (isDropdownOpen.value && !e.target.closest('.pill-dropdown-wrapper')) {
+    isDropdownOpen.value = false;
+  }
+}
 
 // Modals State
 const isAddModalOpen = ref(false);
@@ -691,6 +828,11 @@ onMounted(() => {
     sessionStorage.removeItem('pending_toast');
   }
   fetchContacts();
+  window.addEventListener('click', closeDropdownOnClickOutside);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('click', closeDropdownOnClickOutside);
 });
 </script>
 
@@ -727,6 +869,133 @@ onMounted(() => {
   background-color: #1a8cc4;
   border-color: #1a8cc4;
   transform: translateY(-1px);
+}
+
+/* Pill Search Bar with Dropdown (matching requested design) */
+.pill-search-bar {
+  /* max-width: 380px; */
+  width: 50%;
+  height: 40px;
+  background-color: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 50rem;
+  padding: 0 4px 0 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s ease;
+}
+
+.pill-search-bar:focus-within {
+  border-color: #24a1de;
+  box-shadow: 0 0 0 3px rgba(36, 161, 222, 0.15);
+}
+
+.pill-search-icon {
+  color: #94a3b8;
+  flex-shrink: 0;
+  transition: color 0.2s ease;
+}
+
+.pill-search-bar:focus-within .pill-search-icon {
+  color: #24a1de;
+}
+
+.pill-search-input {
+  font-size: 13.5px;
+  color: #1e293b;
+  outline: none;
+  width: 100%;
+}
+
+.pill-search-input::placeholder {
+  color: #94a3b8;
+  font-size: 13.5px;
+}
+
+.pill-btn-clear {
+  color: #94a3b8;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  transition: all 0.15s ease;
+}
+
+.pill-btn-clear:hover {
+  background-color: #f1f5f9;
+  color: #334155;
+}
+
+.pill-divider {
+  width: 1px;
+  height: 18px;
+  background-color: #e2e8f0;
+  flex-shrink: 0;
+}
+
+.pill-dropdown-trigger {
+  font-size: 13px;
+  font-weight: 500;
+  color: #475569;
+  padding: 5px 8px;
+  border-radius: 50rem;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.pill-dropdown-trigger:hover {
+  color: #0f172a;
+}
+
+.pill-dropdown-menu {
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 155px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 5px;
+  z-index: 1050;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  animation: dropdownFadeIn 0.15s ease-out;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pill-dropdown-item {
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #334155;
+  transition: all 0.15s ease;
+}
+
+.pill-dropdown-item:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.pill-dropdown-item.active {
+  background-color: rgba(36, 161, 222, 0.08);
+  color: #24a1de;
+  font-weight: 600;
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+  transition: transform 0.2s ease;
 }
 
 /* Table Card */
